@@ -43,14 +43,18 @@ def create_user(telegram_id: int, stars: int = 0):
     return {'ok': False, 'telegram_id': telegram_id}
 
 def get_user(telegram_id: int):
-    user = find_one("SELECT telegram_id FROM users WHERE telegram_id = ?", (telegram_id,))
+    user = find_one("SELECT * FROM users WHERE telegram_id = ?", (telegram_id,))
 
     if user:
-        return True
+        return user
     return False
 
 def give_stars(telegram_id: int, amount: int):
     return commit("UPDATE users SET stars=stars+? WHERE telegram_id = ?", (amount, telegram_id,))
+
+def give_total_stars(telegram_id: int, amount: int):
+    return commit("UPDATE users SET all_stars=stars+? WHERE telegram_id = ?", (amount, telegram_id,))
+
     
 def get_participants(lottery_ucode: str):
     return find_many("SELECT * FROM users WHERE ucode_lottery = ? AND stars >= 1", (lottery_ucode,))
@@ -68,5 +72,18 @@ def get_prize_lottery(lottery_ucode: str):
     ic(lottery_ucode)
     return find_one("SELECT prize FROM lottery WHERE ucode = ?", (lottery_ucode,))[0]
 
-def clear_star(lottery_ucode):
+def get_lottery(lottery_ucode: str):
+    ic(lottery_ucode)
+    return find_one("SELECT * FROM lottery WHERE ucode = ?", (lottery_ucode,))
+
+def close_lottery(lottery_ucode: str):
+    return commit("UPDATE lottery SET relevant=0 WHERE ucode = ?", (lottery_ucode,))
+
+def open_lottery(lottery_ucode: str):
+    return commit("UPDATE lottery SET relevant=1 WHERE ucode = ?", (lottery_ucode,))
+
+def clear_star(lottery_ucode: str):
     return commit("UPDATE users SET stars=0 WHERE ucode_lottery = ?", (lottery_ucode,))
+
+def clear_lottery(lottery_ucode: str):
+    return commit("UPDATE users SET ucode_lottery=? WHERE ucode_lottery = ?", (None, lottery_ucode,))

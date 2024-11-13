@@ -19,11 +19,10 @@ API_TOKEN = '7602273048:AAGsdgh0cZukQWalZuhitZKlwCawAiTV4pQ'
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 async def main() -> None:
-    storage = RedisStorage.from_url('redis://localhost:6379/0')
+    # storage = RedisStorage.from_url('redis://localhost:6379/0')
 
     bot = Bot(token=API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    dp = Dispatcher(storage=storage)
-    
+    dp = Dispatcher()
     
     async_scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
     async_scheduler.start()
